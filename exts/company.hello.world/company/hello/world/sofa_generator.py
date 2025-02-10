@@ -2,8 +2,7 @@ import omni.usd
 from pxr import UsdGeom, Gf
 
 class SofaCreator:
-    @staticmethod
-    def create_sofa_part(root_path, name, position, scale):
+    def create_sofa_part(self, root_path, name, position, scale):
         stage = omni.usd.get_context().get_stage()
         path = f"{root_path}/{name}"
         cube = UsdGeom.Cube.Define(stage, path)
@@ -16,31 +15,44 @@ class SofaCreator:
         cube.AddScaleOp().Set(Gf.Vec3f(*scale))
         return cube
 
-    @classmethod
-    def create_default_sofa(cls, 
-                    length=2.0, 
-                    depth=1.0, 
-                    cushion_height=0.15, 
-                    base_height=0.2, 
-                    arms=True, 
-                    arm_height=0.6, 
-                    arm_width=0.2, 
-                    backrest=True, 
-                    backrest_depth=0.1, 
-                    backrest_height=0.8):
+    def create_default_sofa(self, length=2.0, 
+                            depth=1.0, 
+                            cushion_height=0.15, 
+                            base_height=0.2, 
+                            arms=True, 
+                            arm_height=0.6, 
+                            arm_width=0.2, 
+                            backrest=True, 
+                            backrest_depth=0.1, 
+                            backrest_height=0.8):
         stage = omni.usd.get_context().get_stage()
         
         # Generate unique sofa root path
         sofa_root_path = omni.usd.get_stage_next_free_path(stage, "/World/Sofa", True)
         sofa_root = UsdGeom.Xform.Define(stage, sofa_root_path)
         sofa_root.AddTranslateOp().Set(Gf.Vec3f(0, 0, 0))
+        
+        # Create each part of the sofa
+        self.create_base(sofa_root_path, length, base_height, depth)
+        self.create_legs(sofa_root_path, length, depth, base_height)
+        self.create_cushions(sofa_root_path, length, base_height, cushion_height, depth)
+        if arms:
+            self.create_arms(sofa_root_path, length, arm_width, arm_height, depth, backrest, backrest_depth)
+        if backrest:
+            self.create_backrest(sofa_root_path, length, base_height, backrest_height, depth, backrest_depth)
+        
+        return sofa_root
 
+    def customize_sofa(self):
+        # Placeholder for future customization logic
+        return
 
-        # Create base
+    def create_base(self, sofa_root_path, length, base_height, depth):
         base_scale = [length, base_height, depth]
-        cls.create_sofa_part(sofa_root_path, "Base", (0, base_height/2, 0), base_scale)
+        self.create_sofa_part(sofa_root_path, "Base", (0, base_height / 2, 0), base_scale)
 
-        # Create legs (fixed size)
+    def create_legs(self, sofa_root_path, length, depth, base_height):
+        # Fixed-size legs
         leg_scale = [0.15, 0.15, 0.15]
         directions = {
             (-1, -1): "Left_Front",
@@ -49,35 +61,30 @@ class SofaCreator:
             (1, 1): "Right_Back"
         }
         for (x_dir, z_dir), dir_name in directions.items():
-            x_pos = x_dir * (length/2 - leg_scale[0]/2)
-            z_pos = z_dir * (depth/2 - leg_scale[2]/2)
-            cls.create_sofa_part(sofa_root_path, f"Leg_{dir_name}", (x_pos, -leg_scale[1]/2, z_pos), leg_scale)
+            x_pos = x_dir * (length / 2 - leg_scale[0] / 2)
+            z_pos = z_dir * (depth / 2 - leg_scale[2] / 2)
+            self.create_sofa_part(sofa_root_path, f"Leg_{dir_name}", (x_pos, -leg_scale[1] / 2, z_pos), leg_scale)
 
+    def create_cushions(self, sofa_root_path, length, base_height, cushion_height, depth):
         # Create cushions (3 by default)
         num_cushions = 3
         cushion_x_scale = length / num_cushions
-        cushion_z_scale = depth * depth
+        cushion_z_scale = depth
         for i in range(num_cushions):
-            x = -length/2 + cushion_x_scale/2 + i * cushion_x_scale
-            y_pos = base_height + cushion_height/2
-            cls.create_sofa_part(sofa_root_path, f"Cushion_{i}", (x, y_pos, 0), 
-                               [cushion_x_scale, cushion_height, cushion_z_scale])
+            x = -length / 2 + cushion_x_scale / 2 + i * cushion_x_scale
+            y_pos = base_height + cushion_height / 2
+            self.create_sofa_part(sofa_root_path, f"Cushion_{i}", (x, y_pos, 0), [cushion_x_scale, cushion_height, cushion_z_scale])
 
-        # Create arms if enabled
-        if arms:
-            arm_depth = depth + (backrest_depth if backrest else 0)
-            arm_z_pos = backrest_depth/2 if backrest else 0
-            for side in [-1, 1]:
-                x_pos = side * (length/2 + arm_width/2)
-                cls.create_sofa_part(sofa_root_path, f"Arm_{'Left' if side == -1 else 'Right'}", 
-                                   (x_pos, arm_height/2, arm_z_pos), 
-                                   [arm_width, arm_height, arm_depth])
+    def create_arms(self, sofa_root_path, length, arm_width, arm_height, depth, backrest, backrest_depth):
+        # Create arms on both sides
+        arm_depth = depth + (backrest_depth if backrest else 0)
+        arm_z_pos = backrest_depth / 2 if backrest else 0
+        for side in [-1, 1]:
+            x_pos = side * (length / 2 + arm_width / 2)
+            side_name = 'Left' if side == -1 else 'Right'
+            self.create_sofa_part(sofa_root_path, f"Arm_{side_name}", (x_pos, arm_height / 2, arm_z_pos), [arm_width, arm_height, arm_depth])
 
-        # Create backrest if enabled
-        if backrest:
-            backrest_z = depth/2 + backrest_depth/2
-            backrest_y = base_height + backrest_height/2
-            cls.create_sofa_part(sofa_root_path, "Backrest", (0, backrest_y, backrest_z),
-                               [length, backrest_height, backrest_depth])
-        
-        return sofa_root
+    def create_backrest(self, sofa_root_path, length, base_height, backrest_height, depth, backrest_depth):
+        backrest_z = depth / 2 + backrest_depth / 2
+        backrest_y = base_height + backrest_height / 2
+        self.create_sofa_part(sofa_root_path, "Backrest", (0, backrest_y, backrest_z), [length, backrest_height, backrest_depth])

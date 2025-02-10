@@ -4,6 +4,8 @@ import sys
 sys.path.append("C:/Users/85291/Downloads/kit-exts-project/exts/company.hello.world/company/hello/world")
 from sofa_generator import SofaCreator
 
+sofa_creator = SofaCreator()
+
 class CompanyHelloWorldExtension(omni.ext.IExt):
     def on_startup(self, ext_id):
         self._window = ui.Window("Sofa Customizer", width=300, height=500)
@@ -30,7 +32,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
                 
                 # Customize button
                 ui.Button("Customize Sofa", 
-                         clicked_fn=self.generate_custom_sofa, 
+                         clicked_fn=self.customize_sofa, 
                          height=40,)
 
     def _build_sofa_list_section(self):
@@ -78,7 +80,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
 
     def create_default_sofa(self):
         # Create and store new sofa
-        sofa_root = SofaCreator.create_default_sofa()
+        sofa_root = sofa_creator.create_default_sofa()
         sofa_path = sofa_root.GetPath().pathString
         self._add_sofa(sofa_path, {
             "length": 2.0,
@@ -129,8 +131,8 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         self.backrest_depth_field.set_value(params["backrest_depth"])
         self.backrest_height_field.set_value(params["backrest_height"])
 
-    def generate_custom_sofa(self):
-        """Generate a custom sofa based on the current parameters."""
+    def customize_sofa(self):
+        """Replace sofas with new parameters."""
         width = self.width_field.get_value_as_float()
         depth = self.depth_field.get_value_as_float()
         cushion_height = self.cushion_height_field.get_value_as_float()
@@ -143,7 +145,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         backrest_height = self.backrest_height_field.get_value_as_float()
 
         # Create the custom sofa
-        sofa_root = SofaCreator.create_default_sofa(
+        sofa_root = SofaCreator.customize_sofa(
             length=width, 
             depth=depth, 
             cushion_height=cushion_height, 
@@ -168,9 +170,9 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
             "backrest_depth": backrest_depth,
             "backrest_height": backrest_height
         }
-        self.sofas.append({"path": sofa_path, "params": params})
-        self.current_index = len(self.sofas) - 1
-        self.current_sofa = self.sofas[self.current_index]
+        # self.sofas.append({"path": sofa_path, "params": params})
+        # self.current_index = len(self.sofas) - 1
+        # self.current_sofa = self.sofas[self.current_index]
         self._load_sofa_parameters()
 
     def on_shutdown(self):
