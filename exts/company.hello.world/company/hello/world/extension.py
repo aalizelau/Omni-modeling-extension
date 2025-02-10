@@ -42,9 +42,9 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
                     *sofa_paths, 
                     name="Sofa List"
                 )
-                # self._combo_changed_sub = self.sofa_combobox.model.subscribe_item_changed_fn(
-                #     self._on_sofa_selected
-                # )
+                self._combo_changed_sub = self.sofa_combobox.model.subscribe_item_changed_fn(
+                    self._on_sofa_selected
+                )
             else:
                 ui.Label("No sofas available. Create a new sofa to begin.",
                     alignment=ui.Alignment.CENTER)
@@ -104,11 +104,12 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         """Trigger UI refresh"""
         self._window.frame.rebuild()
 
-    def _on_sofa_selected(self, model, value):
+    def _on_sofa_selected(self, item_model, item):
         """Handle sofa selection changes"""
-        self.current_index = value
+        value_model = item_model.get_item_value_model(item)
+        self.current_index = value_model.as_int
         if 0 <= self.current_index < len(self.sofas):
-            self.current_sofa = self.sofas[self.current_index]
+            self.current_sofa = self.sofas[value_model.as_int]
             self._load_sofa_parameters()
 
 
