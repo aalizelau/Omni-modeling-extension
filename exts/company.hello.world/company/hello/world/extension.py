@@ -4,8 +4,6 @@ import sys
 sys.path.append("C:/Users/85291/Downloads/kit-exts-project/exts/company.hello.world/company/hello/world")
 from sofa_generator import SofaCreator
 
-sofa_creator = SofaCreator()
-
 class CompanyHelloWorldExtension(omni.ext.IExt):
     def on_startup(self, ext_id):
         self._window = ui.Window("Sofa Customizer", width=300, height=500)
@@ -80,6 +78,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
 
     def create_default_sofa(self):
         # Create and store new sofa
+        sofa_creator = SofaCreator()
         sofa_root = sofa_creator.create_default_sofa()
         sofa_path = sofa_root.GetPath().pathString
         self._add_sofa(sofa_path, {
@@ -132,7 +131,8 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         self.backrest_height_field.set_value(params["backrest_height"])
 
     def customize_sofa(self):
-        """Replace sofas with new parameters."""
+        """Replace the currently selected sofa with new parameters."""
+        # Get new parameters from the UI fields
         width = self.width_field.get_value_as_float()
         depth = self.depth_field.get_value_as_float()
         cushion_height = self.cushion_height_field.get_value_as_float()
@@ -144,21 +144,38 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         backrest_depth = self.backrest_depth_field.get_value_as_float()
         backrest_height = self.backrest_height_field.get_value_as_float()
 
-        # Create the custom sofa
-        sofa_root = SofaCreator.customize_sofa(
-            length=width, 
-            depth=depth, 
-            cushion_height=cushion_height, 
-            base_height=base_height, 
-            arms=arms, 
-            arm_height=arm_height, 
-            arm_width=arm_width, 
-            backrest=backrest, 
-            backrest_depth=backrest_depth, 
+        # Ensure a sofa is selected before trying to customize
+        if self.current_sofa is None:
+            print("No sofa selected for customization!")
+            return
+
+        # Retrieve the current sofa's root path
+        sofa_root_path = self.current_sofa["path"]
+
+        # Create an instance of SofaCreator
+        sofa_creator = SofaCreator()
+
+        # Replace the old sofa with the new parameters at the same path.
+        # This call will clear the selection and remove the old sofa prim.
+        new_sofa_root = sofa_creator.customize_sofa(
+            sofa_root_path,
+            length=width,
+            depth=depth,
+            cushion_height=cushion_height,
+            base_height=base_height,
+            arms=arms,
+            arm_height=arm_height,
+            arm_width=arm_width,
+            backrest=backrest,
+            backrest_depth=backrest_depth,
             backrest_height=backrest_height
         )
-        sofa_path = sofa_root.GetPath().pathString
-        params = {
+
+        # Get the updated path (should be the same as sofa_root_path)
+        new_sofa_path = new_sofa_root.GetPath().pathString
+
+        # Update the current sofa's parameters in our list
+        self.current_sofa["params"] = {
             "length": width,
             "depth": depth,
             "cushion_height": cushion_height,
@@ -170,9 +187,9 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
             "backrest_depth": backrest_depth,
             "backrest_height": backrest_height
         }
-        # self.sofas.append({"path": sofa_path, "params": params})
-        # self.current_index = len(self.sofas) - 1
-        # self.current_sofa = self.sofas[self.current_index]
+        self.current_sofa["path"] = new_sofa_path
+
+        # Optionally, reload the UI fields to reflect any changes
         self._load_sofa_parameters()
 
     def on_shutdown(self):

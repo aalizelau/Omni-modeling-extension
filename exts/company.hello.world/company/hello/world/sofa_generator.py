@@ -43,9 +43,40 @@ class SofaCreator:
         
         return sofa_root
 
-    def customize_sofa(self):
-        # Placeholder for future customization logic
-        return
+    def customize_sofa(self, sofa_root_path, length, 
+                    depth, 
+                    cushion_height, 
+                    base_height, 
+                    arms, 
+                    arm_height, 
+                    arm_width, 
+                    backrest, 
+                    backrest_depth, 
+                    backrest_height):
+        stage = omni.usd.get_context().get_stage()
+        selection = omni.usd.get_context().get_selection()
+        
+        # Clear any selected prims
+        selection.clear_selected_prim_paths()
+        
+        # If the sofa prim exists, remove it (this deletes the sofa and its children)
+        if stage.GetPrimAtPath(sofa_root_path):
+            stage.RemovePrim(sofa_root_path)
+        
+        # Re-create the sofa root using the same path
+        sofa_root = UsdGeom.Xform.Define(stage, sofa_root_path)
+        sofa_root.AddTranslateOp().Set(Gf.Vec3f(0, 0, 0))
+        
+        # Create the sofa parts with the new parameters
+        self.create_base(sofa_root_path, length, base_height, depth)
+        self.create_legs(sofa_root_path, length, depth, base_height)
+        self.create_cushions(sofa_root_path, length, base_height, cushion_height, depth)
+        if arms:
+            self.create_arms(sofa_root_path, length, arm_width, arm_height, depth, backrest, backrest_depth)
+        if backrest:
+            self.create_backrest(sofa_root_path, length, base_height, backrest_height, depth, backrest_depth)
+        
+        return sofa_root
 
     def create_base(self, sofa_root_path, length, base_height, depth):
         base_scale = [length, base_height, depth]
