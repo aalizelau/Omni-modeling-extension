@@ -20,7 +20,7 @@ The Sofa Customizer Extension is an Omniverse Kit extension that allows users to
   Seamlessly update and replace sofa components within the Omniverse USD stage without restarting the scene.
 
 ### Demo
-
+![ezgif-159dd9b13a38e4](https://github.com/user-attachments/assets/8d6b7e11-5118-49e3-8bef-d4625e105c44)
 
 ### Usage
 
