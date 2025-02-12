@@ -66,15 +66,19 @@ class SofaCreator:
     def create_default_sofa(
             self,
             length=2.0,
+            num_cushions = 2, 
             depth=1.0,
             cushion_height=0.15,
-            base_height=0.2,
+            base_height=0.25,
             arms=True,
             arm_height=0.6,
             arm_width=0.2,
             backrest=True,
             backrest_depth=0.15,
-            backrest_height=0.8
+            backrest_height=0.8,
+            leg_base =0.075, 
+            leg_height =0.075,
+            leg_offset =0.05
         ):
         stage = omni.usd.get_context().get_stage()
         # Create a unique sofa root under /World
@@ -97,8 +101,8 @@ class SofaCreator:
         
         # Create each sofa component under the Geometry folder.
         self.create_base(geom_scope_path, length, base_height, depth, usd_file_path)
-        self.create_legs(geom_scope_path, length, depth, base_height, usd_file_path)
-        self.create_cushions(geom_scope_path, length, base_height, cushion_height, depth, usd_file_path)
+        self.create_legs(geom_scope_path, length, depth, leg_base, leg_height, leg_offset, usd_file_path)
+        self.create_cushions(geom_scope_path, length, num_cushions, base_height, cushion_height, depth, usd_file_path)
         if arms:
             self.create_arms(geom_scope_path, length, arm_width, arm_height, depth, backrest, backrest_depth, usd_file_path)
         if backrest:
@@ -145,8 +149,8 @@ class SofaCreator:
         base_scale = [length, base_height, depth]
         self.create_sofa_part(parent_path, "Base", (0, base_height / 2, 0), base_scale, usd_file_path)
 
-    def create_legs(self, parent_path, length, depth, base_height, usd_file_path):
-        leg_scale = [0.15, 0.15, 0.15]
+    def create_legs(self, parent_path, length, depth, leg_base, leg_height, leg_offset, usd_file_path):
+        leg_scale = [leg_base, leg_height, leg_base]
         directions = {
             (-1, -1): "Left_Front",
             (-1,  1): "Left_Back",
@@ -154,12 +158,11 @@ class SofaCreator:
             ( 1,  1): "Right_Back"
         }
         for (x_dir, z_dir), dir_name in directions.items():
-            x_pos = x_dir * (length / 2 - leg_scale[0] / 2)
-            z_pos = z_dir * (depth / 2 - leg_scale[2] / 2)
-            self.create_sofa_part(parent_path, f"Leg_{dir_name}", (x_pos, -leg_scale[1] / 2, z_pos), leg_scale, usd_file_path)
+            x_pos = x_dir * (length / 2 - leg_scale[0] / 2 -leg_offset)
+            z_pos = z_dir * (depth / 2 - leg_scale[2] / 2 -leg_offset)
+            self.create_sofa_part(parent_path, f"Leg_{dir_name}", (x_pos, 0, z_pos), leg_scale, usd_file_path)
 
-    def create_cushions(self, parent_path, length, base_height, cushion_height, depth, usd_file_path):
-        num_cushions = 2
+    def create_cushions(self, parent_path, length, num_cushions, base_height, cushion_height, depth, usd_file_path):
         cushion_x_scale = length / num_cushions
         cushion_z_scale = depth
         for i in range(num_cushions):
