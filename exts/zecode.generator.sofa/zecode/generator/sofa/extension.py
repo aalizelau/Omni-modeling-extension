@@ -32,6 +32,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
                 ui.Button("Customize Sofa", 
                          clicked_fn=self.customize_sofa, 
                          height=40,)
+                ui.Button("reset",click_fn=self.reset_params,height=40)
 
     def _build_sofa_list_section(self):
         with ui.VStack(spacing=5):

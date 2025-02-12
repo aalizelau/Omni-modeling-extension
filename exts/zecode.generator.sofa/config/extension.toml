@@ -13,13 +13,13 @@ description="A procedural modeling tool for creating and customizing sofa."
 readme  = "docs/README.md"
 
 # URL of the extension source repository.
-repository = "https://github.com/aalizelau/Omni-modeling-extension"
+repository = ""
 
 # One of categories for UI.
-category = "Modeling"
+category = "Example"
 
 # Keywords for the extension
-keywords = ["furniture", "sofa", "builder", "design", "modular", "cuztomization", "parametric"]
+keywords = ["kit", "example"]
 
 # Location of change log file in target (final) folder of extension, relative to the root.
 # More info on writing changelog: https://keepachangelog.com/en/1.0.0/
@@ -35,11 +35,10 @@ icon = "data/icon.png"
 # Use omni.ui to build simple UI
 [dependencies]
 "omni.kit.uiapp" = {}
-"omni.usd" ={}
 
 # Main python module this extension provides, it will be publicly available as "import company.hello.world".
 [[python.module]]
-name = "zecode.generator.sofa"
+name = "company.hello.world"
 
 [[test]]
 # Extra dependencies only to be used during test run

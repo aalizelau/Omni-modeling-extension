@@ -1,52 +1,42 @@
-# Extension Project Template
+## Sofa Customizer Extension
 
-This project was automatically generated.
+The Sofa Customizer Extension is an Omniverse Kit extension that allows users to create and customize sofas in a USD (Universal Scene Description) environment. Using Python and Omniverse APIs, the extension dynamically generates sofa geometry by referencing external USD assets, applies realistic MDL materials, and provides an intuitive UI for interactive customization.
 
-- `app` - It is a folder link to the location of your *Omniverse Kit* based app.
-- `exts` - It is a folder where you can add new extensions. It was automatically added to extension search path. (Extension Manager -> Gear Icon -> Extension Search Path).
+### Features
 
-Open this folder using Visual Studio Code. It will suggest you to install few extensions that will make python experience better.
+- **Sofa Geometry Generation:**  
+  Create detailed sofa parts including the base, legs, cushions, arms, and backrest—all built from an external USD file.
 
-Look for "company.hello.world" extension in extension manager and enable it. Try applying changes to any python files, it will hot-reload and you can observe results immediately.
+- **Realistic Material Binding:**  
+  Automatically apply a high-quality fabric material (MDL) to your sofa components to achieve a realistic look.
 
-Alternatively, you can launch your app from console with this folder added to search path and your extension enabled, e.g.:
+- **Customizable Parameters:**  
+  Adjust sofa dimensions and options such as width, depth, number of cushions, cushion height, base height, arm configuration, backrest details, and leg dimensions via an easy-to-use interface.
 
-```
-> app\omni.code.bat --ext-folder exts --enable company.hello.world
-```
+- **Interactive UI:**  
+  The built-in "Sofa Customizer" window provides parameter fields and checkboxes, allowing users to create a default sofa and later customize it with updated settings.
 
-# App Link Setup
+- **Dynamic Scene Updates:**  
+  Seamlessly update and replace sofa components within the Omniverse USD stage without restarting the scene.
 
-If `app` folder link doesn't exist or broken it can be created again. For better developer experience it is recommended to create a folder link named `app` to the *Omniverse Kit* app installed from *Omniverse Launcher*. Convenience script to use is included.
-
-Run:
-
-```
-> link_app.bat
-```
-
-If successful you should see `app` folder link in the root of this repo.
-
-If multiple Omniverse apps is installed script will select recommended one. Or you can explicitly pass an app:
-
-```
-> link_app.bat --app create
-```
-
-You can also just pass a path to create link to:
-
-```
-> link_app.bat --path "C:/Users/bob/AppData/Local/ov/pkg/create-2021.3.4"
-```
+### Demo
 
 
-# Sharing Your Extensions
+### Usage
 
-This folder is ready to be pushed to any git repository. Once pushed direct link to a git repository can be added to *Omniverse Kit* extension search paths.
+1. **Launch Omniverse Kit:**  
+   Open Omniverse Create and navigate to the Extension Manager.
 
-Link might look like this: `git://github.com/[user]/[your_repo].git?branch=main&dir=exts`
+2. **Enable the Extension:**  
+   Find and enable the Sofa Customizer extension.
 
-Notice `exts` is repo subfolder with extensions. More information can be found in "Git URL as Extension Search Paths" section of developers manual.
+3. **Open the Sofa Customizer Window:**  
+   Once enabled, open the "Sofa Customizer" window.
 
-To add a link to your *Omniverse Kit* based app go into: Extension Manager -> Gear Icon -> Extension Search Path
+4. **Create and Customize Sofas:**  
+   - Click **Create Default Sofa** to generate a sofa with preset dimensions.
+   - Select any created sofas in the scene from the drop-down menu.
+   - Modify parameters (e.g., Width, Number of Cushions, Depth, etc.) using the provided fields.
+   - Click **Customize Sofa** to update the selected sofa with your new parameters.
+   - Replace materials for individual components as you like. 
 
