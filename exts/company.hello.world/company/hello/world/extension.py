@@ -51,16 +51,20 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
 
     def _build_parameter_section(self):
         with ui.VStack(spacing=5):
-            self.width_field = self._create_parameter_field("Width", 2.0)
-            self.depth_field = self._create_parameter_field("Depth", 1.0)
-            self.cushion_height_field = self._create_parameter_field("Cushion Height", 0.15)
-            self.base_height_field = self._create_parameter_field("Base Height", 0.2)
+            self.width_field = self._create_parameter_field("Width", 200)
+            self.num_cushions = self._create_parameter_field("No. of Cushion", 2)
+            self.depth_field = self._create_parameter_field("Depth", 100)
+            self.cushion_height_field = self._create_parameter_field("Cushion Height", 15)
+            self.base_height_field = self._create_parameter_field("Base Height", 20)
             self.arms_checkbox = self._create_checkbox("Include Arms", True)
-            self.arm_height_field = self._create_parameter_field("Arm Height", 0.6)
-            self.arm_width_field = self._create_parameter_field("Arm Width", 0.2)
+            self.arm_height_field = self._create_parameter_field("Arm Height", 60)
+            self.arm_width_field = self._create_parameter_field("Arm Width", 20)
             self.backrest_checkbox = self._create_checkbox("Include Backrest", True)
-            self.backrest_depth_field = self._create_parameter_field("Backrest Depth", 0.1)
-            self.backrest_height_field = self._create_parameter_field("Backrest Height", 0.8)
+            self.backrest_depth_field = self._create_parameter_field("Backrest Depth", 10)
+            self.backrest_height_field = self._create_parameter_field("Backrest Height", 80)
+            self.leg_base_field = self._create_parameter_field("Leg Base", 7.5)
+            self.leg_height_field = self._create_parameter_field("Leg Height", 7.5)
+            self.leg_offset_field = self._create_parameter_field("Leg Offset", 5.0)
 
     def _create_parameter_field(self, label, default):  
         with ui.HStack():
@@ -82,16 +86,20 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         sofa_root = sofa_creator.create_default_sofa()
         sofa_path = sofa_root.GetPath().pathString
         self._add_sofa(sofa_path, {
-            "length": 2.0,
-            "depth": 1.0,
-            "cushion_height": 0.15,
-            "base_height": 0.2,
+            "length": 200,
+            "num_cushions":2,
+            "depth": 100,
+            "cushion_height": 15,
+            "base_height": 20,
             "arms": True,
-            "arm_height": 0.6,
-            "arm_width": 0.2,
+            "arm_height": 60,
+            "arm_width": 20,
             "backrest": True,
-            "backrest_depth": 0.1,
-            "backrest_height": 0.8
+            "backrest_depth": 10,
+            "backrest_height": 80,
+            "leg_base": 7.5,
+            "leg_height": 7.5,
+            "leg_offset": 5.0
         })
 
     def _add_sofa(self, path, params):
@@ -113,13 +121,13 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
             self.current_sofa = self.sofas[value_model.as_int]
             self._load_sofa_parameters()
 
-
     def _load_sofa_parameters(self):
         """Load the parameters of the selected sofa into the UI fields."""
         if self.current_sofa is None:
             return
         params = self.current_sofa["params"]
         self.width_field.set_value(params["length"])
+        self.num_cushions.set_value(params["num_cushions"])
         self.depth_field.set_value(params["depth"])
         self.cushion_height_field.set_value(params["cushion_height"])
         self.base_height_field.set_value(params["base_height"])
@@ -129,20 +137,27 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         self.backrest_checkbox.set_value(params["backrest"])
         self.backrest_depth_field.set_value(params["backrest_depth"])
         self.backrest_height_field.set_value(params["backrest_height"])
+        self.leg_base_field.set_value(params["leg_base"])
+        self.leg_height_field.set_value(params["leg_height"])
+        self.leg_offset_field.set_value(params["leg_offset"])
 
     def customize_sofa(self):
         """Replace the currently selected sofa with new parameters."""
         # Get new parameters from the UI fields
-        width = self.width_field.get_value_as_float()
-        depth = self.depth_field.get_value_as_float()
-        cushion_height = self.cushion_height_field.get_value_as_float()
-        base_height = self.base_height_field.get_value_as_float()
+        width = self.width_field.get_value_as_int()
+        num_cushions = self.num_cushions.get_value_as_int()
+        depth = self.depth_field.get_value_as_int()
+        cushion_height = self.cushion_height_field.get_value_as_int()
+        base_height = self.base_height_field.get_value_as_int()
         arms = self.arms_checkbox.get_value_as_bool()
-        arm_height = self.arm_height_field.get_value_as_float()
-        arm_width = self.arm_width_field.get_value_as_float()
+        arm_height = self.arm_height_field.get_value_as_int()
+        arm_width = self.arm_width_field.get_value_as_int()
         backrest = self.backrest_checkbox.get_value_as_bool()
-        backrest_depth = self.backrest_depth_field.get_value_as_float()
-        backrest_height = self.backrest_height_field.get_value_as_float()
+        backrest_depth = self.backrest_depth_field.get_value_as_int()
+        backrest_height = self.backrest_height_field.get_value_as_int()
+        leg_base = self.leg_base_field.get_value_as_float()
+        leg_height = self.leg_height_field.get_value_as_float()
+        leg_offset = self.leg_offset_field.get_value_as_float()
 
         # Ensure a sofa is selected before trying to customize
         if self.current_sofa is None:
@@ -160,6 +175,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         new_sofa_root = sofa_creator.customize_sofa(
             sofa_root_path,
             length=width,
+            num_cushions=num_cushions,
             depth=depth,
             cushion_height=cushion_height,
             base_height=base_height,
@@ -168,7 +184,10 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
             arm_width=arm_width,
             backrest=backrest,
             backrest_depth=backrest_depth,
-            backrest_height=backrest_height
+            backrest_height=backrest_height,
+            leg_base=leg_base,
+            leg_height=leg_height,
+            leg_offset=leg_offset
         )
 
         # Get the updated path (should be the same as sofa_root_path)
@@ -177,6 +196,7 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
         # Update the current sofa's parameters in our list
         self.current_sofa["params"] = {
             "length": width,
+            "num_cushions": num_cushions,
             "depth": depth,
             "cushion_height": cushion_height,
             "base_height": base_height,
@@ -185,7 +205,10 @@ class CompanyHelloWorldExtension(omni.ext.IExt):
             "arm_width": arm_width,
             "backrest": backrest,
             "backrest_depth": backrest_depth,
-            "backrest_height": backrest_height
+            "backrest_height": backrest_height,
+            "leg_base": leg_base,
+            "leg_height": leg_height,
+            "leg_offset": leg_offset
         }
         self.current_sofa["path"] = new_sofa_path
 

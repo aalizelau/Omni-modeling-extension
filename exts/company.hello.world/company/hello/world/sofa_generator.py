@@ -110,39 +110,54 @@ class SofaCreator:
         
         return sofa_root
 
-    def customize_sofa(self, sofa_root_path, length, depth, cushion_height, base_height,
-                       arms, arm_height, arm_width, backrest, backrest_depth, backrest_height):
+    def customize_sofa(
+        self,
+        sofa_root_path,
+        length,
+        num_cushions,
+        depth,
+        cushion_height,
+        base_height,
+        arms,
+        arm_height,
+        arm_width,
+        backrest,
+        backrest_depth,
+        backrest_height,
+        leg_base,
+        leg_height,
+        leg_offset
+    ):
         stage = omni.usd.get_context().get_stage()
         selection = omni.usd.get_context().get_selection()
         selection.clear_selected_prim_paths()
-        
+
         # Get or create the sofa root.
         sofa_root = stage.GetPrimAtPath(sofa_root_path)
         if not sofa_root:
             sofa_root = UsdGeom.Xform.Define(stage, sofa_root_path)
             sofa_root.AddTranslateOp().Set(Gf.Vec3f(0, 0, 0))
-        else:
-            # Instead of removing the entire sofa root, we clear out the Geometry folder.
-            geom_scope_path = f"{sofa_root_path}/Geometry"
-            geom_scope = stage.GetPrimAtPath(geom_scope_path)
-            if geom_scope:
-                for child in list(geom_scope.GetChildren()):
-                    stage.RemovePrim(child.GetPath())
-            else:
-                geom_scope_path = omni.usd.get_stage_next_free_path(
-                    stage, f"{sofa_root_path}/Geometry", False
-                )
-                omni.kit.commands.execute('CreatePrim', prim_type='Scope', prim_path=str(geom_scope_path))
+
+        # Get the Geometry scope. If it exists, remove its children; if not, create one.
+        geom_scope_path = f"{sofa_root_path}/Geometry"
+        geom_scope = stage.GetPrimAtPath(geom_scope_path)
+        if geom_scope:
+            for child in list(geom_scope.GetChildren()):
+                stage.RemovePrim(child.GetPath())
         
+        # Create the material in the Looks folder and store its path for later binding.
+        looks_scope_path = f"{sofa_root_path}/Looks"
+        self.material_path = self.create_sofa_material(looks_scope_path)
+            
         # Recreate sofa components in the Geometry folder.
         self.create_base(geom_scope_path, length, base_height, depth, usd_file_path)
-        self.create_legs(geom_scope_path, length, depth, base_height, usd_file_path)
-        self.create_cushions(geom_scope_path, length, base_height, cushion_height, depth, usd_file_path)
+        self.create_legs(geom_scope_path, length, depth, leg_base, leg_height, leg_offset, usd_file_path)
+        self.create_cushions(geom_scope_path, length, num_cushions, base_height, cushion_height, depth, usd_file_path)
         if arms:
             self.create_arms(geom_scope_path, length, arm_width, arm_height, depth, backrest, backrest_depth, usd_file_path)
         if backrest:
             self.create_backrest(geom_scope_path, length, base_height, backrest_height, depth, backrest_depth, usd_file_path)
-        
+
         return sofa_root
 
     def create_base(self, parent_path, length, base_height, depth, usd_file_path):
