@@ -65,20 +65,20 @@ class SofaCreator:
 
     def create_default_sofa(
             self,
-            length=2.0,
+            length=200,
             num_cushions = 2, 
-            depth=1.0,
-            cushion_height=0.15,
-            base_height=0.25,
+            depth=100,
+            cushion_height=15,
+            base_height=25,
             arms=True,
-            arm_height=0.6,
-            arm_width=0.2,
+            arm_height=60,
+            arm_width=20,
             backrest=True,
-            backrest_depth=0.15,
-            backrest_height=0.8,
-            leg_base =0.075, 
-            leg_height =0.075,
-            leg_offset =0.05
+            backrest_depth=15,
+            backrest_height=80,
+            leg_base =7.5, 
+            leg_height =7.5,
+            leg_offset =5.0
         ):
         stage = omni.usd.get_context().get_stage()
         # Create a unique sofa root under /World
