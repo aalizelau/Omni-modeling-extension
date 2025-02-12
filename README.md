@@ -2,6 +2,9 @@
 
 The Sofa Customizer Extension is an Omniverse Kit extension that allows users to create and customize sofas in a USD (Universal Scene Description) environment. Using Python and Omniverse APIs, the extension dynamically generates sofa geometry by referencing external USD assets, applies realistic MDL materials, and provides an intuitive UI for interactive customization.
 
+### Demo
+![ezgif-159dd9b13a38e4](https://github.com/user-attachments/assets/8d6b7e11-5118-49e3-8bef-d4625e105c44)
+
 ### Features
 
 - **Sofa Geometry Generation:**  
@@ -18,9 +21,6 @@ The Sofa Customizer Extension is an Omniverse Kit extension that allows users to
 
 - **Dynamic Scene Updates:**  
   Seamlessly update and replace sofa components within the Omniverse USD stage without restarting the scene.
-
-### Demo
-![ezgif-159dd9b13a38e4](https://github.com/user-attachments/assets/8d6b7e11-5118-49e3-8bef-d4625e105c44)
 
 ### Usage
 
